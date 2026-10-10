@@ -1,5 +1,5 @@
 # Redis primaire + réplica, bascule automatique via Sentinel.
-# Prérequis (hors Git) : secret "redis-auth" (clé "password") dans le namespace redis.
+# Mot de passe : secret "redis-auth" généré par External Secrets (password.yaml).
 apiVersion: redis.redis.opstreelabs.in/v1beta2
 kind: RedisReplication
 metadata:
