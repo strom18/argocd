@@ -1,3 +1,6 @@
+# Values du chart oci://ghcr.io/berriai/litellm/chart/litellm (argocd/templates/litellm.yaml)
+# Prérequis (hors Git, créés par la CI/CD) dans le namespace litellm :
+#   litellm-masterkey (masterkey), litellm-db (username, password), litellm-env (REDIS_PASSWORD)
 
 gateway:
   config:

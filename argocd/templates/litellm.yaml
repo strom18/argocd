@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litellm
+  namespace: argocd
+  annotations:
+    # Après Postgres et Redis (wave 1)
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  sources:
+    # Chart Helm OCI
+    - repoURL: ghcr.io/berriai/litellm/chart
+      chart: litellm
+      targetRevision: 1.104.2
+      helm:
+        releaseName: litellm
+        valueFiles:
+          - $values/apps/litellm/values.yaml
+    # Ce dépôt, uniquement pour fournir le fichier de values
+    - repoURL: {{ required "repoURL est requis" .Values.repoURL }}
+      targetRevision: {{ .Values.targetRevision }}
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: litellm
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
