@@ -16,8 +16,8 @@ spec:
       releaseName: cnpg
       valuesObject:
         monitoring:
-          # Nécessite la CRD PodMonitor (Prometheus Operator / kube-prometheus-stack)
-          podMonitorEnabled: false
+          # CRD PodMonitor fournie par kube-prometheus-stack (wave -1)
+          podMonitorEnabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cnpg-system

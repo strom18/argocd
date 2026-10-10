@@ -12,6 +12,20 @@ gateway:
         secretKeyRef:
           name: litellm-env
           key: LITELLM_SALT_KEY
+  # Sidecar qui expose /metrics (service <gateway>-metrics), requis par le ServiceMonitor
+  metricsServer:
+    enabled: true
+  # Scrapé par Prometheus (kube-prometheus-stack)
+  serviceMonitor:
+    enabled: true
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # Nécessitent prometheus-adapter (custom.metrics.k8s.io), sinon HPA en erreur :
+    # targetRequestsPerSecond: "90"
+    # targetTokensPerSecond: "6M"
   config:
     proxy_config:
       general_settings:
@@ -70,15 +84,3 @@ ingress:
     - path: /index.txt
       pathType: Exact
       service: ui
-
-autoscaling:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetRequestsPerSecond: "90"
-  targetTokensPerSecond: "6M"
-metricsServer:
-  enabled: true
-serviceMonitor:
-  enabled: true
