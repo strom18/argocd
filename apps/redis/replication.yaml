@@ -1,0 +1,38 @@
+# Redis primaire + réplica, bascule automatique via Sentinel.
+# Prérequis (hors Git) : secret "redis-auth" (clé "password") dans le namespace redis.
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisReplication
+metadata:
+  name: redis
+  namespace: redis
+  annotations:
+    # Permet à ArgoCD de synchroniser même si la CRD n'est pas encore connue
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  # 1 primaire (actif) + 1 réplica (backup)
+  clusterSize: 2
+  kubernetesConfig:
+    image: quay.io/opstree/redis:v7.0.15
+    imagePullPolicy: IfNotPresent
+    redisSecret:
+      name: redis-auth
+      key: password
+  sentinel:
+    # 3 sentinelles, quorum 2 : promeut le réplica si le primaire tombe
+    image: quay.io/opstree/redis-sentinel:v7.0.15
+    size: 3
+    quorum: "2"
+    redisSecret:
+      name: redis-auth
+      key: password
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: local-path
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+  podSecurityContext:
+    runAsUser: 1000
+    fsGroup: 1000
