@@ -29,7 +29,7 @@ spec:
   storage:
     volumeClaimTemplate:
       spec:
-        storageClassName: local-path
+        storageClassName: csi-hostpath-sc
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:

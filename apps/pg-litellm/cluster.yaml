@@ -10,9 +10,9 @@ spec:
   instances: 2
   storage:
     size: 10Gi
-    # Provisioner multi-nœud (minikube: addon storage-provisioner-rancher).
+    # Provisioner multi-nœud (minikube: addon csi-hostpath-driver).
     # "standard" (minikube-hostpath) ne prépare les volumes que sur le control-plane.
-    storageClass: local-path
+    storageClass: csi-hostpath-sc
   bootstrap:
     initdb:
       database: litellm
