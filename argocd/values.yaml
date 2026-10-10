@@ -1,0 +1,3 @@
+# Surchargé par bootstrap/root.yaml : c'est là que l'URL est définie.
+repoURL: ""
+targetRevision: main

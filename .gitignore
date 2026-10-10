@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+.vscode/
+
+# Secrets en clair : ne jamais commiter
+apps/pg-litellm/secret.yaml

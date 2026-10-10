@@ -1,0 +1,26 @@
+# Seul manifeste à appliquer à la main :
+#   kubectl apply -n argocd -f bootstrap/root.yaml
+# argocd/ est un chart Helm qui génère toutes les Applications (pattern "app of apps").
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: &repo https://github.com/strom18/argocd.git
+    targetRevision: &rev main
+    path: argocd
+    helm:
+      valuesObject:
+        # Transmis aux Applications enfants
+        repoURL: *repo
+        targetRevision: *rev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,18 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-litellm
+  namespace: db
+  annotations:
+    # Permet à ArgoCD de synchroniser même si la CRD n'est pas encore connue
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  instances: 2
+  storage:
+    size: 10Gi
+  bootstrap:
+    initdb:
+      database: litellm
+      owner: litellm
+      # Pas de secret fourni : CNPG génère "pg-litellm-app"
+      # (clés username, password, host, uri, ...) -> rien de sensible dans Git

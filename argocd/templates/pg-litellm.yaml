@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pg-litellm
+  namespace: argocd
+  annotations:
+    # Après l'opérateur CNPG (wave 0)
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: {{ required "repoURL est requis" .Values.repoURL }}
+    targetRevision: {{ .Values.targetRevision }}
+    path: apps/pg-litellm
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: db
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    # Filet de sécurité si la CRD ou le webhook CNPG ne sont pas encore prêts
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

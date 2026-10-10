@@ -1,0 +1,68 @@
+
+gateway:
+  config:
+    proxy_config:
+      general_settings:
+        proxy_batch_write_at: 60
+        store_model_in_db: true
+        proxy_config_reload_interval_seconds: 30
+        database_connection_pool_limit: 20
+        disable_error_logs: true
+      litellm_settings:
+        request_timeout: 600
+        set_verbose: false
+        json_logs: true
+
+masterKey:
+  secretName: litellm-masterkey
+  secretKey: masterkey
+
+database:
+  writer:
+    host: "pg-litellm-rw.db.svc.cluster.local"
+    port: 5432
+    dbname: litellm
+    passwordSecret:
+      name: litellm-db
+      usernameKey: username
+      passwordKey: password
+  # optional: add database.reader to route reads to a replica
+
+redis:
+  host: "redis-master.redis.svc.cluster.local"
+  port: 6379
+  passwordSecret:
+    name: litellm-env
+    passwordKey: REDIS_PASSWORD
+
+# one host fronting gateway, backend, and ui
+ingress:
+  enabled: true
+  className: "nginx"
+  # alb (default) or nginx. ingress-nginx's admission webhook rejects the chart's
+  # dotted paths (/favicon.ico, /eu.assemblyai) unless this is nginx
+  controller: nginx
+  host: llm.local
+  # optional: routes the chart does not ship a rule for, e.g. a passthrough
+  # prefix added after this chart version or a custom
+  # general_settings.pass_through_endpoints path. Additive: every built-in
+  # UI, gateway, and backend path is still rendered
+  extraPaths:
+    - path: /watsonx
+      pathType: Prefix     # default; Exact and ImplementationSpecific also work
+      service: gateway     # default; backend and ui also work
+    - path: /index.txt
+      pathType: Exact
+      service: ui
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetRequestsPerSecond: "90"
+  targetTokensPerSecond: "6M"
+metricsServer:
+  enabled: true
+serviceMonitor:
+  enabled: true
