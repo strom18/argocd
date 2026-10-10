@@ -1,8 +1,17 @@
 # Values du chart oci://ghcr.io/berriai/litellm/chart/litellm (argocd/templates/litellm.yaml)
 # Prérequis (hors Git, créés par la CI/CD) dans le namespace litellm :
-#   litellm-masterkey (masterkey), litellm-db (username, password), litellm-env (REDIS_PASSWORD)
+#   litellm-masterkey (masterkey), litellm-db (username, password),
+#   litellm-env (REDIS_PASSWORD, LITELLM_SALT_KEY)
 
 gateway:
+  # Clé de chiffrement des credentials stockés en base : ne JAMAIS la changer
+  # une fois des modèles/clés enregistrés, sinon ils deviennent illisibles.
+  extraEnv: &saltKeyEnv
+    - name: LITELLM_SALT_KEY
+      valueFrom:
+        secretKeyRef:
+          name: litellm-env
+          key: LITELLM_SALT_KEY
   config:
     proxy_config:
       general_settings:
@@ -15,6 +24,10 @@ gateway:
         request_timeout: 600
         set_verbose: false
         json_logs: true
+
+# Le backend (API d'admin) lit/écrit aussi les credentials chiffrés
+backend:
+  extraEnv: *saltKeyEnv
 
 masterKey:
   secretName: litellm-masterkey
