@@ -4,9 +4,12 @@
 #   litellm-env (REDIS_PASSWORD, LITELLM_SALT_KEY)
 
 gateway:
-  # Clé de chiffrement des credentials stockés en base : ne JAMAIS la changer
-  # une fois des modèles/clés enregistrés, sinon ils deviennent illisibles.
-  extraEnv: &saltKeyEnv
+  extraEnv: &commonEnv
+    # Désactive le chargement d'un fichier .env au démarrage du proxy
+    - name: LITELLM_MODE
+      value: "PRODUCTION"
+    # Clé de chiffrement des credentials stockés en base : ne JAMAIS la changer
+    # une fois des modèles/clés enregistrés, sinon ils deviennent illisibles.
     - name: LITELLM_SALT_KEY
       valueFrom:
         secretKeyRef:
@@ -41,7 +44,7 @@ gateway:
 
 # Le backend (API d'admin) lit/écrit aussi les credentials chiffrés
 backend:
-  extraEnv: *saltKeyEnv
+  extraEnv: *commonEnv
 
 masterKey:
   secretName: litellm-masterkey
