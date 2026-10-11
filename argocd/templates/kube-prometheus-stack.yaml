@@ -25,6 +25,13 @@ spec:
             probeSelectorNilUsesHelmValues: false
             scrapeConfigSelectorNilUsesHelmValues: false
             retention: 7d
+        grafana:
+          # Classe "nginx" fournie par ingress-nginx (wave 0)
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - grafana.local
         # minikube : ces composants n'écoutent que sur 127.0.0.1, impossibles
         # à scraper (cibles "down" et alertes permanentes sinon)
         kubeEtcd:
