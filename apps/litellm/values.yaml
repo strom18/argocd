@@ -34,6 +34,11 @@ gateway:
       general_settings:
         proxy_batch_write_at: 60
         store_model_in_db: true
+        # Conserve prompts et réponses dans LiteLLM_SpendLogs (visibles dans l'UI "Logs")
+        store_prompts_in_spend_logs: true
+        # Purge des SpendLogs plus vieux que 15 min, vérifiée toutes les 5 min
+        maximum_spend_logs_retention_period: "15m"
+        maximum_spend_logs_retention_interval: "5m"
         proxy_config_reload_interval_seconds: 30
         database_connection_pool_limit: 20
         disable_error_logs: true
